@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <title>Realistic Solar System</title>
   <style>
     body {
       margin: 0;
       height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #000;
+      background-color: black;
       overflow: hidden;
     }
 
-    /* Stars Layer */
     .stars {
       position: absolute;
       width: 100%;
@@ -32,112 +30,176 @@
     }
 
     @keyframes twinkle {
-      0% { opacity: 0.2; transform: scale(1); }
+      0%, 100% { opacity: 0.1; transform: scale(1); }
       50% { opacity: 1; transform: scale(1.5); }
-      100% { opacity: 0.2; transform: scale(1); }
     }
 
-    /* Planetary System */
     .container {
-      font-size: 10px;
-      width: 40em;
       position: relative;
-      height: 40em;
+      width: 100vw;
+      height: 100vh;
       z-index: 1;
     }
 
     .sun {
       position: absolute;
-      width: 10em;
-      height: 10em;
-      background-color: yellow;
-      border-radius: 50%;
-      box-shadow: 0 0 3em white;
-      animation: rotate 10s linear infinite;
       top: 50%;
       left: 50%;
+      width: 150px;
+      height: 150px;
+      background-image: url("assets/textures/sun.png");
+      background-size: cover;
+      background-repeat: no-repeat;
       transform: translate(-50%, -50%);
+      z-index: 2;
+      animation: pulse 3s infinite ease-in-out;
     }
 
-    .earth, .moon {
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    .earth-orbit {
       position: absolute;
-      border-style: solid;
-      border-color: white transparent transparent transparent;
-      border-width: 0.1em 0.1em 0 0;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      margin-left: -200px;
+      margin-top: -200px;
+      border: 1px solid rgb(255, 255, 255);   /* Solid + translucent */
+      box-shadow: 0 0 12px rgb(255, 255, 255); /* Outer glow */
       border-radius: 50%;
+      animation: rotate 30s linear infinite;
     }
 
     .earth {
-      top: 5em;
-      left: 5em;
-      width: 30em;
-      height: 30em;
-      animation: orbit 36.5s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      width: 60px;
+      height: 60px;
+      background-image: url("assets/textures/earth.png");
+      background-size: cover;
+      background-repeat: no-repeat;
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0,255,255,0.6);
+      transform: translate(-50%, -50%);
+      animation: earth-spin 6s linear infinite;
+    }
+
+    @keyframes earth-spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .moon-orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100px;
+      height: 100px;
+      border: 1px solid rgb(255, 255, 255);   /* Solid + translucent */
+      box-shadow: 0 0 12px rgb(255, 255, 255); /* Outer glow */
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: rotate-moon 3s linear infinite;
+    }
+
+    @keyframes rotate-moon {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     .moon {
-      top: 0em;
-      left: 0em;
-      width: 8em;
-      height: 8em;
-      animation: orbit 2.7s linear infinite;
-    }
-
-    .earth::before, .moon::before {
-      content: '';
       position: absolute;
+      top: 50%;
+      left: 100%;
+      width: 25px;
+      height: 25px;
+      background-image: url("assets/textures/moon.png");
+      background-size: cover;
+      background-repeat: no-repeat;
+      transform: translate(-50%, -50%);
       border-radius: 50%;
+      box-shadow: 0 0 8px rgba(200,200,200,0.5);
     }
 
-    .earth::before {
-      top: 2.8em;
-      left: 2.8em;
-      width: 3em;
-      height: 3em;
-      background-color: aqua;
+    .shooting-star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      box-shadow: 0 0 6px white;
+      animation: shoot 1s ease-out forwards;
+      z-index: 0;
     }
 
-    .moon::before {
-      top: 0.8em;
-      right: 0.2em;
-      width: 1.2em;
-      height: 1.2em;
-      background-color: silver;
+    @keyframes shoot {
+      0% { transform: translate(0, 0); opacity: 1; }
+      100% { transform: translate(300px, -300px); opacity: 0; }
     }
 
-    @keyframes orbit {
-      to {
-        transform: rotate(360deg);
-      }
+    @keyframes rotate {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <!-- Stars Layer -->
+
   <div class="stars" id="stars"></div>
 
-  <!-- Planetary System -->
   <div class="container">
     <div class="sun"></div>
-    <div class="earth">
-      <div class="moon"></div>
+    <div class="earth-orbit">
+      <div class="earth">
+        <div class="moon-orbit">
+          <div class="moon"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- JavaScript to Generate Random Twinkling Stars -->
-  <script>
-    const starsContainer = document.getElementById('stars');
-    const totalStars = 150; // more stars for better sky
+  <!-- Music -->
+  <audio id="bgMusic" autoplay loop>
+    <source src="assets/music/space-music.mp3" type="audio/mpeg">
+  </audio>
 
-    for (let i = 0; i < totalStars; i++) {
+  <script>
+    // Twinkling stars
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 150; i++) {
       const star = document.createElement('div');
       star.className = 'star';
       star.style.top = Math.random() * 100 + 'vh';
       star.style.left = Math.random() * 100 + 'vw';
-      star.style.animationDuration = (1.5 + Math.random() * 2.5) + 's';
+      star.style.animationDuration = (2 + Math.random() * 3) + 's';
       star.style.animationDelay = (Math.random() * 5) + 's';
       starsContainer.appendChild(star);
     }
+
+    // Shooting stars
+    function createShootingStar() {
+      const star = document.createElement('div');
+      star.className = 'shooting-star';
+      star.style.top = Math.random() * 80 + 'vh';
+      star.style.left = Math.random() * 80 + 'vw';
+      document.body.appendChild(star);
+      setTimeout(() => star.remove(), 1000);
+    }
+
+    setInterval(() => {
+      if (Math.random() < 0.5) createShootingStar();
+    }, 3000);
+
+    // Autoplay fallback
+    const music = document.getElementById('bgMusic');
+    music.play().catch(() => {
+      document.body.addEventListener('click', () => {
+        music.play();
+      }, { once: true });
+    });
   </script>
+
 </body>
 </html>
