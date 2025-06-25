@@ -10,16 +10,20 @@ for (let i = 0; i < 150; i++) {
   starsContainer.appendChild(star);
 }
 
-// Shooting Stars PNG based
-function createShootingStar() {
+// Shooting Star Function
+function createShootingStar(x, y) {
   const star = document.createElement('div');
   star.className = 'shooting-star';
 
-  const top = Math.random() * 70 + 'vh';
-  const left = Math.random() * 70 + 'vw';
-
-  star.style.top = top;
-  star.style.left = left;
+  // If x and y are provided (on click), position from click
+  if (x !== undefined && y !== undefined) {
+    star.style.left = x + 'px';
+    star.style.top = y + 'px';
+  } else {
+    // Otherwise random position
+    star.style.left = Math.random() * window.innerWidth + 'px';
+    star.style.top = Math.random() * window.innerHeight * 0.8 + 'px';
+  }
 
   document.body.appendChild(star);
 
@@ -28,9 +32,15 @@ function createShootingStar() {
   }, 1500);
 }
 
+// Auto shooting stars
 setInterval(() => {
   if (Math.random() > 0.5) createShootingStar();
 }, 3000);
+
+// On click/tap: shooting star from that point
+document.addEventListener('click', (e) => {
+  createShootingStar(e.clientX, e.clientY);
+});
 
 // Music fallback
 const music = document.getElementById('bgMusic');
